@@ -9,6 +9,7 @@ window.addEventListener('load', function () {
         event.preventDefault();
 
         postearComentario();
+        postearUsuario();
     })
 
 
@@ -90,9 +91,9 @@ function renderizarRespuesta(datos) {
 // https://docs.google.com/document/d/1ZiCPf7IICvtp6rwfxoq5Wh5dJUROKqNw/preview
 
 let usuario = {
-    firstName: "Florencia2",
-    lastName: "bicca",
-    email: "abcflorencia2@abc.com",
+    firstName: "Fiorella",
+    lastName: "pereZ",
+    email: "afiorepllaZ@abc.com",
     password: "mipassword",
 }
 
@@ -109,7 +110,8 @@ function postearUsuario() {
         .then((respuesta) => respuesta.json())
         .then((data) => {
             console.log(data);
-            renderizarRespuesta(data);
-            return data;
+            /*JSON.stringify(data)
+            localStorage.setItem("jwt",data)*/
         });
     }
+
