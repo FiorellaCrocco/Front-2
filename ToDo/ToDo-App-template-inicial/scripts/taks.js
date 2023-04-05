@@ -80,6 +80,7 @@ window.addEventListener('load', function () {
          localStorage.setItem("listado", tareas1)*/
 
         renderizarTareas(tareas);
+        botonesCambioEstado();
         botonBorrarTarea();
       })
       .catch(error => console.log(error))
@@ -125,22 +126,22 @@ window.addEventListener('load', function () {
   function renderizarTareas(listado) {
     //consultarTareas();
     //let tareas = JSON.parse(localStorage.getItem("listado"));
- /*    const verTareaPendientes = document.querySelector('.tareas-pendientes');
-    const verTareaTerminadas = document.querySelector('.tareas-terminadas');
-    verTareaPendientes.innerHTML = "";
-    verTareaTerminadas.innerHTML = "";
-
-    //console.log(tareas);
-    //console.log(tareas[0].description);
-    //console.log(typeof tareas);
-
-   listado.forEach((tarea) => {
-      if (!tarea.completed) {
-        verTareaPendientes.innerHTML += `<li class="tarea">${tarea.description} <button class="borrar" id="${tarea.id}"> <i class="fa-regular fa-trash-can"></i></button></li>`;
-      } else {
-        verTareaTerminadas.innerHTML += `<li class="tarea">${tarea.description} <button class="borrar" id="${tarea.id}"> <i class="fa-regular fa-trash-can"></i></button></li>`;
-      }
-    })*/
+    /*    const verTareaPendientes = document.querySelector('.tareas-pendientes');
+       const verTareaTerminadas = document.querySelector('.tareas-terminadas');
+       verTareaPendientes.innerHTML = "";
+       verTareaTerminadas.innerHTML = "";
+   
+       //console.log(tareas);
+       //console.log(tareas[0].description);
+       //console.log(typeof tareas);
+   
+      listado.forEach((tarea) => {
+         if (!tarea.completed) {
+           verTareaPendientes.innerHTML += `<li class="tarea">${tarea.description} <button class="borrar" id="${tarea.id}"> <i class="fa-regular fa-trash-can"></i></button></li>`;
+         } else {
+           verTareaTerminadas.innerHTML += `<li class="tarea">${tarea.description} <button class="borrar" id="${tarea.id}"> <i class="fa-regular fa-trash-can"></i></button></li>`;
+         }
+       })*/
     const verTarea = document.querySelector('.tareas-pendientes');
     verTarea.innerHTML = '';
     let contador = 0;
@@ -167,7 +168,7 @@ window.addEventListener('load', function () {
             </div>
           </li>`
       } else {
-          verTarea.innerHTML += `
+        verTarea.innerHTML += `
           <li class="tarea" data-aos="flip-up">
           <button class="change" id="${tarea.id}"><i class="fa-regular fa-circle"></i></button>
           <div class="descripcion">
@@ -186,9 +187,52 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
   function botonesCambioEstado() {
 
+    const btnCambiarIncompleta = document.querySelectorAll('.change');
+
+    btnCambiarIncompleta.forEach(boton => {
+      boton.addEventListener('click', function (event) {
+        const id = event.target.id;
+        const urlTarea = `${url}/tasks/${id}`
+////////////
+        const settings = {
+          method: "GET", 
+          headers:{
+            authorization: token,
+          }
+        };
+
+        fetch(urlTarea, settings)
+        .then(response=> response.json())
+        .then(tareas=>{
 
 
+          const payload =  {};
 
+          payload.completed = !tareas.completed;
+
+                      const settingsCambio = {
+                        method: 'PUT',
+                        headers: {
+                          "Authorization": token,
+                          "Content-type": "application/json"
+                        },
+                        body: JSON.stringify(payload),
+
+                      }
+                      fetch(urlTarea, settingsCambio)
+                        .then(response => {
+                          console.log("Cambiando tarea...");
+                          console.log(response.status);
+                          consultarTareas();
+                        })
+
+        })
+
+        /////////////////
+
+      })
+
+    })
 
   }
 
@@ -197,38 +241,28 @@ window.addEventListener('load', function () {
   /*                     FUNCIÓN 7 - Eliminar tarea [DELETE]                    */
   /* -------------------------------------------------------------------------- */
   function botonBorrarTarea() {
-
-  const botonBorraTarea = document.querySelectorAll(".borrar");
-
+    const botonBorraTarea = document.querySelectorAll(".borrar");
     botonBorraTarea.forEach(boton => {
       boton.addEventListener("click", function (event) {
-
         if (confirm("Desea borrar esta tarea?")) {
           const id = event.target.id;
-
           const settings = {
             method: "DELETE",
             headers: {
               'Content-Type': 'application/json',
               authorization: token,
-
             }
           }
-
           console.log("borrando tarea");
-
           fetch(`${url}/tasks/${id}`, settings)
-
             .then(reponse => {
               console.log("Eliminar Tarea");
               console.log(reponse.status);
-
               consultarTareas();
             })
-
+            .catch(error => console.log(error))
         }
       })
     })
-
   };
 });
